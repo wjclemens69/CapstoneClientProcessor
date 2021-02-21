@@ -1,0 +1,42 @@
+[{
+"securityId":"1",
+"clientId":"LocalBank",
+"cusip": "881246",
+"balance": "200000",
+"maturity": "12/31/2035",
+"currentYield": "6.5" },
+ {
+"securityId":"2",
+"clientId":"LocalBank",
+"cusip": "672345",
+"balance": "320000",
+"maturity": "10/31/2035",
+"currentYield": "5.5"  },
+ {
+"securityId":"3",
+"clientId":"LocalBank",
+"cusip": "9328j8wmi",
+"balance": "100000",
+"maturity": "09/30/2028",
+"currentYield": "6.52"  },
+ {
+"securityId":"4",
+"clientId":"LocalBank",
+"cusip": "88ddd1246",
+"balance": "223000",
+"maturity": "12/31/2028",
+"currentYield": "4.5" },
+ {
+"securityId":"5",
+"clientId":"LocalBank",
+"cusip": "sswrdswe",
+"balance": "1345lld",
+"maturity": "08/31/2023",
+"currentYield": "3.5" },
+ {
+"securityId":"6",
+"clientId":"LocalBank",
+"cusip": "wswedds",
+"balance": "600000",
+"maturity": "02/28/2035",
+"currentYield": "2.5"  }]
