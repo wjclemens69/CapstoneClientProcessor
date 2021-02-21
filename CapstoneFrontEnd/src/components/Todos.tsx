@@ -56,9 +56,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
       })
 
       
-   let nn:CreateFileStatusRequest = {"clientId": "AA","fileKey":"TestInput.json"};
-
-   console.log("checking for quueu calling = ")
+   
 
 
       this.setState({
@@ -114,7 +112,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
   render() {
     return (
       <div>
-        <Header as="h1">TODOs</Header>
+        <Header as="h1">Investment File Uploads</Header>
 
         {this.renderCreateTodoInput()}
 
@@ -132,7 +130,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
               color: 'teal',
               labelPosition: 'left',
               icon: 'add',
-              content: 'New task',
+              content: 'New Investment File',
               onClick: this.onTodoCreate
             }}
             fluid
@@ -160,7 +158,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     return (
       <Grid.Row>
         <Loader indeterminate active inline="centered">
-          Loading TODOs
+          Loading Investment File Uploads
         </Loader>
       </Grid.Row>
     )

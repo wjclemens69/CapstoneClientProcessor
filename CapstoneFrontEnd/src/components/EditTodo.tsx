@@ -73,14 +73,14 @@ export class EditTodo extends React.PureComponent<
   render() {
     return (
       <div>
-        <h1>Upload new image</h1>
+        <h1>Upload new investment file (must be json format)</h1>
 
         <Form onSubmit={this.handleSubmit}>
           <Form.Field>
             <label>File</label>
             <input
               type="file"
-              accept="image/*"
+              accept="json"
               placeholder="Image to upload"
               onChange={this.handleFileChange}
             />
