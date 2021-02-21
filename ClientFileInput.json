@@ -1,0 +1,30 @@
+[{
+"CUSIP": "881246",
+"Balance": "200000",
+"Maturity": "12/31/2035",
+"CurrentYield": "6.5" },
+ {
+"CUSIP": "672345",
+"Balance": "320000",
+"Maturity": "10/31/2035",
+"CurrentYield": "5.5"  },
+ {
+"CUSIP": "9328j8wmi",
+"Balance": "100000",
+"Maturity": "09/30/2028",
+"CurrentYield": "6.52"  },
+ {
+"CUSIP": "88ddd1246",
+"Balance": "223000",
+"Maturity": "12/31/2028",
+"CurrentYield": "4.5" },
+ {
+"CUSIP": "sswrdswe",
+"Balance": "1345lld",
+"Maturity": "08/31/2023",
+"CurrentYield": "3.5" },
+ {
+"CUSIP": "wswedds",
+"Balance": "600000",
+"Maturity": "02/28/2035",
+"CurrentYield": "2.5"  }]
