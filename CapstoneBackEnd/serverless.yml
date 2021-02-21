@@ -1,0 +1,373 @@
+service:
+  name: CapstoneClientFileProcessorC
+
+plugins:
+  - serverless-webpack
+  - serverless-iam-roles-per-function
+ 
+
+provider:
+  
+  tracing:
+    lambda: true
+    apiGateway: true
+  
+  name: aws
+  runtime: nodejs12.x
+
+  
+
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+
+  environment:
+  
+    CLIENTFILES_FILEBUCKET: capstoneclientfileprocessbuckete-${self:provider.stage}
+    SECURITIES_TABLE: ClientSecurities-${self:provider.stage}
+    FILESTATUS_TABLEC: ClientFileStatusC-${self:provider.stage}
+    FILESPROCESSINGQUEUE_TABLE: CapstoneProcessingQueue-${self:provider.stage}
+    
+    
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:DeleteItem
+        - dynamodb:UpdateItem
+        - dynamodb:Query
+
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESTATUS_TABLEC}
+    
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:DeleteItem
+        - dynamodb:UpdateItem
+        - dynamodb:Query
+
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESPROCESSINGQUEUE_TABLE}  
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: arn:aws:s3:::${self:provider.environment.CLIENTFILES_FILEBUCKET}/*
+
+custom:
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Udagram API
+        description: Serverless application for images sharing
+    models:
+      - name: Group
+        contentType: application/json
+        schema: ${file(models/createToDo.json)}
+     
+
+functions:
+#arn:aws:dynamodb:us-east-1:758290640424:table/ClientFileProcessingQueue-dev
+  UploadNotification:
+    handler: src/lambda/notifications/sendclientUploadNotification.handler
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:us-east-1:758290640424:table/ClientFileStatusC-dev/index/fileKeyIndex
+
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:us-east-1:758290640424:table/ClientFileProcessingQueue-dev/index/processedIndex
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESPROCESSINGQUEUE_TABLE}
+
+
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
+
+  # TODO: Configure this function
+  GetFileStatus:
+    handler: src/lambda/http/getFileStatus.handler
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESTATUS_TABLEC}
+    events:
+      - http:
+          method: get
+          path: fileStatus
+          authorizer: Auth
+          cors: true
+
+  GetOutstandingFiles:
+    handler: src/lambda/http/getOutstandingFiles.handler
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESPROCESSINGQUEUE_TABLE}
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:us-east-1:758290640424:table/CapstoneProcessingQueue-dev/index/processedIndex
+    events:
+      - http:
+          method: get
+          path: queue
+          cors: true
+        
+          #updateQueue
+
+  UpdateQueuItem:
+    handler: src/lambda/http/updateQueue.handler
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESPROCESSINGQUEUE_TABLE}
+    events:
+      - http:
+          method: patch
+          path: queue/{fileKey}
+          cors: true
+          
+          
+          #arn:aws:dynamodb:us-east-1:758290640424:table/CapstoneProcessingQueue-dev/index/processedIndex
+
+
+
+          #getOutstandingFiles
+
+  # TODO: Configure this function
+  CreateFileStatus:
+    handler: src/lambda/http/createFileStatus.handler
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESTATUS_TABLEC}
+    events:
+      - http:
+          method: post
+          path: fileStatus
+          authorizer: Auth
+          cors: true
+          request:
+         
+            
+  CreateFileStatusb:
+    handler: src/lambda/http/createFileStatusb.handler
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESTATUS_TABLEC}
+    events:
+      - http:
+          method: post
+          path: fileStatusb
+          cors: true
+         
+
+  # TODO: Configure this function
+  UpdateFileStatus:
+    handler: src/lambda/http/updateFileStatus.handler
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESTATUS_TABLEC}
+    events:
+      - http:
+          method: patch
+          path: fileStatus/{fileKey}
+          authorizer: Auth
+          cors: true
+          request:
+            schema:
+              application/json: ${file(src/models/updateToDo.json)}
+          documentation:
+            summary: Create a new to do
+            description: Create a new to do
+
+  # TODO: Configure this function
+  DeleteFileStatus:
+    handler: src/lambda/http/deleteFileStatus.handler
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESTATUS_TABLEC}
+    events:
+      - http:
+          method: delete
+          path: fileStatus/{fileKey}
+          authorizer: Auth
+          cors: true
+#arn:aws:dynamodb:us-east-1:758290640424:table/ClientFileStatusC-dev/index/fileKeyIndex
+  # TODO: Configure this function
+  GenerateUploadUrl:
+    handler: src/lambda/http/generateUploadUrl.handler
+    events:
+      - http:
+          method: post
+          path: fileStatus/{fileKey}/attachment
+          cors: true
+
+resources:
+  Resources:
+    # TODO: Add any necessary AWS resources
+  
+    FileStatusDynamoDBTableb:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: clientId
+            AttributeType: S
+          - AttributeName: fileKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: clientId
+            KeyType: HASH
+          - AttributeName: fileKey
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: fileKeyIndex
+            KeySchema:
+              - AttributeName: fileKey
+                KeyType: HASH
+            Projection:
+              ProjectionType: 'ALL'
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.FILESTATUS_TABLEC}
+
+    ProcessingQueueDynamoDBTableb:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: fileKey
+            AttributeType: S
+          - AttributeName: fileProcessed
+            AttributeType: S
+        KeySchema:
+          - AttributeName: fileKey
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: processedIndex
+            KeySchema:
+              - AttributeName: fileProcessed
+                KeyType: HASH
+            Projection:
+              ProjectionType: 'ALL'    
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.FILESPROCESSINGQUEUE_TABLE}
+
+
+    ClientSecuritiesTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: clientId
+            AttributeType: S
+          - AttributeName: securityId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: clientId
+            KeyType: HASH
+          - AttributeName: securityId
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: securityIndex
+            KeySchema:
+              - AttributeName: securityId
+                KeyType: HASH
+            Projection:
+              ProjectionType: 'ALL'
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.FILESTATUS_TABLEC}
+
+    #         ClientId: string
+    # SecurityId: string
+    # CUSIP: string
+    # Balance: string
+    # Maturity: string
+    # CurrentYield: string
+
+
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'RequestBodyValidator'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
+
+
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST','PATCH','DELETE'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: ApiGatewayRestApi
+
+    AttachmentsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.CLIENTFILES_FILEBUCKET}
+        NotificationConfiguration:
+          LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt UploadNotificationLambdaFunction.Arn
+        #UploadNotification
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+
+    
+    SendUploadNotificationsPermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName: !Ref UploadNotificationLambdaFunction
+        Principal: s3.amazonaws.com
+        Action: lambda:InvokeFunction
+        SourceAccount: !Ref AWS::AccountId
+        SourceArn: arn:aws:s3:::${self:provider.environment.CLIENTFILES_FILEBUCKET}
+
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.CLIENTFILES_FILEBUCKET}/*'
+        Bucket: !Ref AttachmentsBucket   
