@@ -5,11 +5,17 @@ import { apiEndpoint } from '../config'
 import {ClientInvestmentItem} from '../types/ClientInvestmentItem'
 
 
-export async function checkClientFileQueu() {
+export async function checkClientFileQueu(idToken:string) {
   
- const response = await Axios.get(`${apiEndpoint}/queue`)
+ const response = await Axios.get(`${apiEndpoint}/queue`,{
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${idToken}`
+  }
+})
 
 for(let i=0; i<response.data.items.length; i++){
+ 
  
 
   var fileKey  = response.data.items[i].fileKey
@@ -44,11 +50,32 @@ console.log("1st objinvestments client = ",objinvestments[0].clientId)
 
  console.log("DOWNLOADED Investment Item","client Id = ",item.clientId);
 
- const addInvestment = await Axios.post(`${apiEndpoint}/investment`, JSON.stringify(item))
+ const addInvestment = await Axios.post(`${apiEndpoint}/investment`, JSON.stringify(item),{
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${idToken}`
+  }
+})
 console.log("InvestmentAdded",addInvestment)
 
 const updateresponse = await Axios.patch(`${apiEndpoint}/queue/${fileKey}`)
+//start
+//const updateresponse = await Axios.patch(`${apiEndpoint}/queue/${fileKey}`,{headers:{'Content-Type': 'application/json','Authorization': `Bearer ${idToken}`}})
+
+
+
+
+//end
+
+// {
+//   headers: {
+//     'Content-Type': 'application/json',
+//     'Authorization': `Bearer ${idToken}`
+//   }
+
+
 console.log(updateresponse)
+
 
 
  }

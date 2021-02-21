@@ -65,7 +65,7 @@ export default class Auth {
     this.accessToken = authResult.accessToken;
     this.idToken = authResult.idToken;
     this.expiresAt = expiresAt;
-    checkClientFileQueu()
+    checkClientFileQueu(this.idToken)
     
     // navigate to the home route
     this.history.replace('/');
