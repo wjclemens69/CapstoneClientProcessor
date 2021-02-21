@@ -1,12 +1,9 @@
 import * as AWSXray from 'aws-xray-sdk'
-
 import { createLogger } from '../../utils/logger'
 import 'source-map-support/register'
 import * as AWS from 'aws-sdk'
 import * as  uuid from 'uuid'
 import { CreateFileStatusRequest } from '../../requests/CreateFileStatusRequest'
-
-//import { getUserId } from '../utils'
 const filestatustablename = process.env.FILESTATUS_TABLEC;
 
 export async function createFileStatus(newFileStatus: CreateFileStatusRequest, clientId: string) {
@@ -17,12 +14,6 @@ export async function createFileStatus(newFileStatus: CreateFileStatusRequest, c
     const XAWS = AWSXray.captureAWS(AWS)
     const todoClient = new XAWS.DynamoDB.DocumentClient()
 
-    //const todoClient = new AWS.DynamoDB.DocumentClient()
-
-    console.log("WWWWWWWWWWWWWW")
-
-   
-
     const itemid = uuid.v4()
     const date = new Date().toLocaleString('en-US', { timeZone: 'UTC' })
     
@@ -30,8 +21,6 @@ export async function createFileStatus(newFileStatus: CreateFileStatusRequest, c
     newFileStatus.uploadeDate = date
     newFileStatus.processed = 'NotStarted'
     newFileStatus.clientId
-    
-
 
     const fileStatusForPost = {
         clientId: clientId,
@@ -50,10 +39,5 @@ export async function createFileStatus(newFileStatus: CreateFileStatusRequest, c
 
     logger.info("creating new to do based on :" + fileStatusForPost + "has been created")
     return fileStatusForPost
-
-
-
-
-
 
 }

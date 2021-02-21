@@ -23,7 +23,7 @@ provider:
   environment:
   
     CLIENTFILES_FILEBUCKET: capstoneclientfileprocessbuckete-${self:provider.stage}
-    SECURITIES_TABLE: ClientSecurities-${self:provider.stage}
+    INVESTMENTS_TABLE: ClientInvestments-${self:provider.stage}
     FILESTATUS_TABLEC: ClientFileStatusC-${self:provider.stage}
     FILESPROCESSINGQUEUE_TABLE: CapstoneProcessingQueue-${self:provider.stage}
     
@@ -106,7 +106,11 @@ functions:
           path: fileStatus
           authorizer: Auth
           cors: true
+  
+  
 
+
+  
   GetOutstandingFiles:
     handler: src/lambda/http/getOutstandingFiles.handler
     iamRoleStatements:
@@ -162,19 +166,34 @@ functions:
           cors: true
           request:
          
-            
-  CreateFileStatusb:
-    handler: src/lambda/http/createFileStatusb.handler
+  
+  CreateInvestmentItem:
+    handler: src/lambda/http/createInvestment.handler
     iamRoleStatements:
       - Effect: "Allow"        
         Action:
           - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESTATUS_TABLEC}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.INVESTMENTS_TABLE}
     events:
       - http:
           method: post
-          path: fileStatusb
+          path: investment
           cors: true
+          request:
+  #
+
+  # CreateFileStatusb:
+  #   handler: src/lambda/http/createFileStatusb.handler
+  #   iamRoleStatements:
+  #     - Effect: "Allow"        
+  #       Action:
+  #         - dynamodb:PutItem
+  #       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESTATUS_TABLEC}
+  #   events:
+  #     - http:
+  #         method: post
+  #         path: fileStatusb
+  #         cors: true
          
 
   # TODO: Configure this function
@@ -271,7 +290,7 @@ resources:
         TableName: ${self:provider.environment.FILESPROCESSINGQUEUE_TABLE}
 
 
-    ClientSecuritiesTable:
+    INVESTMENTSTABLEDynamoDb:
       Type: "AWS::DynamoDB::Table"
       Properties:
         AttributeDefinitions:
@@ -292,7 +311,7 @@ resources:
             Projection:
               ProjectionType: 'ALL'
         BillingMode: PAY_PER_REQUEST
-        TableName: ${self:provider.environment.FILESTATUS_TABLEC}
+        TableName: ${self:provider.environment.INVESTMENTS_TABLE}
 
     #         ClientId: string
     # SecurityId: string

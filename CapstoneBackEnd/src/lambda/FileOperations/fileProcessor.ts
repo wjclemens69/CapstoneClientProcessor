@@ -3,13 +3,8 @@ import * as AWS from 'aws-sdk';
 const bucketname = process.env.CLIENTFILES_FILEBUCKET
 const readLine = require('readline')
 
-
-
-
 export async function processFile() {
 console.log("file operation was called!!!!!!")
-
-
 
 
 }

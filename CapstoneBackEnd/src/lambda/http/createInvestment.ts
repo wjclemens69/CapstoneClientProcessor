@@ -1,21 +1,16 @@
 import 'source-map-support/register'
-import { getUserId } from '../utils'
 import { createLogger } from '../../utils/logger'
-import {createFileStatus as createFileStatus} from '../dataAccess/fileStatusData'
+import {createInvestmentItem} from '../dataAccess/investmentData'
 import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
-import { CreatefileStatusRequest } from '../../requests/CreateTodoRequest'
+import { ClientInvestmentItem } from '../../Types/ClientInvestmentItem'
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
 
     const logger = createLogger('createFileStatus')
-    const newStatus: CreatefileStatusRequest = JSON.parse(event.body)
-    logger.info("Adding new todo = " + newStatus.fileName)
-
-
-    const userId = getUserId(event)
-    
-    const todoItem = await createFileStatus(newStatus, userId)
-console.log("todo created hmmmmm")
+    const newInvestment: ClientInvestmentItem = JSON.parse(event.body)
+    logger.info("Adding new todo = " + newInvestment.cUSIP)
+    const investmentItem = await createInvestmentItem(newInvestment)
+    console.log("investment created lambda")
 
 
 return {
@@ -25,11 +20,9 @@ return {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Credentials': true
     },
-    body: JSON.stringify({item: todoItem})
+    body: JSON.stringify({item: investmentItem})
 }
 
  
  
 }
-
-

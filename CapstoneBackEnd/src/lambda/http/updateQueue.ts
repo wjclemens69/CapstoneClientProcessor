@@ -10,8 +10,6 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     const fileKey = event.pathParameters.fileKey
 
     console.log("event body for queu update: ", event.body)
-    //const clientId = getUserId(event)
-  // const parsedQueu: QueueItem = JSON.parse(event.body)
    
     const updateResult = await UpdateQueue(fileKey)
     return {

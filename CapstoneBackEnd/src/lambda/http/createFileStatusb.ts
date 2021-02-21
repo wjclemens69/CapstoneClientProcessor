@@ -1,5 +1,4 @@
 import 'source-map-support/register'
-
 import { getUserId } from '../utils'
 import { createLogger } from '../../utils/logger'
 import {createFileStatus} from '../dataAccess/fileStatus'
