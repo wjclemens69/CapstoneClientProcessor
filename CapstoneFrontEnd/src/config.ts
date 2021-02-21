@@ -10,6 +10,6 @@ export const authConfig = {
   clientId: 'tRsf51p5tsLtsJcDgs4Y2OrL0O5leAFZ',          // Auth0 client id
   callbackUrl: 'http://localhost:3000/callback',
   accessKeyId: 'AKIA3BDNE5YUBQA42XFS',
-  secretAccessKey: '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'
+  secretAccessKey: ''
 
 }
