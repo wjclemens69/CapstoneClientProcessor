@@ -5,7 +5,7 @@ import Axios from 'axios'
 import { UpdateTodoRequest } from '../types/UpdateTodoRequest';
 
 export async function getTodos(idToken: string): Promise<Todo[]> {
-  console.log('Fetching todos')
+  console.log('Fetching client file status')
 
   //const response = await Axios.get(`${apiEndpoint}/todos`, {
     const response = await Axios.get(`${apiEndpoint}/fileStatus`, {
@@ -14,7 +14,7 @@ export async function getTodos(idToken: string): Promise<Todo[]> {
       'Authorization': `Bearer ${idToken}`
     },
   })
-  console.log('Todos:', response.data)
+  console.log('File Status:', response.data)
   return response.data.items
 }
 
