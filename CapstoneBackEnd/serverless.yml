@@ -28,34 +28,7 @@ provider:
     FILESPROCESSINGQUEUE_TABLE: CapstoneProcessingQueue-${self:provider.stage}
     
     
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:Scan
-        - dynamodb:PutItem
-        - dynamodb:GetItem
-        - dynamodb:DeleteItem
-        - dynamodb:UpdateItem
-        - dynamodb:Query
-
-      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESTATUS_TABLEC}
-    
-    - Effect: Allow
-      Action:
-        - dynamodb:Scan
-        - dynamodb:PutItem
-        - dynamodb:GetItem
-        - dynamodb:DeleteItem
-        - dynamodb:UpdateItem
-        - dynamodb:Query
-
-      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESPROCESSINGQUEUE_TABLE}  
-    - Effect: Allow
-      Action:
-        - s3:PutObject
-        - s3:GetObject
-      Resource: arn:aws:s3:::${self:provider.environment.CLIENTFILES_FILEBUCKET}/*
-
+  
 custom:
   documentation:
     api:
@@ -70,7 +43,7 @@ custom:
      
 
 functions:
-#arn:aws:dynamodb:us-east-1:758290640424:table/ClientFileProcessingQueue-dev
+
   UploadNotification:
     handler: src/lambda/notifications/sendclientUploadNotification.handler
     iamRoleStatements:
@@ -182,23 +155,7 @@ functions:
           cors: true
           authorizer: Auth
           request:
-  #
-
-  # CreateFileStatusb:
-  #   handler: src/lambda/http/createFileStatusb.handler
-  #   iamRoleStatements:
-  #     - Effect: "Allow"        
-  #       Action:
-  #         - dynamodb:PutItem
-  #       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FILESTATUS_TABLEC}
-  #   events:
-  #     - http:
-  #         method: post
-  #         path: fileStatusb
-  #         cors: true
-         
-
-  # TODO: Configure this function
+ 
   UpdateFileStatus:
     handler: src/lambda/http/updateFileStatus.handler
     iamRoleStatements:
@@ -233,8 +190,7 @@ functions:
           path: fileStatus/{fileKey}
           authorizer: Auth
           cors: true
-#arn:aws:dynamodb:us-east-1:758290640424:table/ClientFileStatusC-dev/index/fileKeyIndex
-  # TODO: Configure this function
+
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
     events:
@@ -315,14 +271,6 @@ resources:
               ProjectionType: 'ALL'
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.INVESTMENTS_TABLE}
-
-    #         ClientId: string
-    # SecurityId: string
-    # CUSIP: string
-    # Balance: string
-    # Maturity: string
-    # CurrentYield: string
-
 
     RequestBodyValidator:
       Type: AWS::ApiGateway::RequestValidator
