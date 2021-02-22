@@ -171,7 +171,7 @@ functions:
           cors: true
           request:
             schema:
-              application/json: ${file(src/models/updateToDo.json)}
+              application/json: ${file(src/models/updateFileStatus.json)}
           documentation:
             summary: Create a new to do
             description: Create a new to do
